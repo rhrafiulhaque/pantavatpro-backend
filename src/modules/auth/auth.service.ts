@@ -18,6 +18,7 @@ const logIn = async (user: IUser): Promise<IUser | null> => {
 
   const isPasswordMatched = await bcrypt.compare(password, userExist.password)
   if (!isPasswordMatched) {
+    console.log("Hello bro");
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password Doesnot Match!')
   }
   console.log(isPasswordMatched)
