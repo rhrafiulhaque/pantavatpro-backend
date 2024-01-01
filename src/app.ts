@@ -12,7 +12,7 @@ app.use(cookieParser())
 //parser
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(globalErrorHandler)
-app.use('/api/v1/', routes)
 
+app.use('/api/v1/', routes)
+app.use(globalErrorHandler)
 export default app

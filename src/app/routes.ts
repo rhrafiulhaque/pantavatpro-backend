@@ -1,5 +1,6 @@
 import express from 'express'
 import { AuthRoutes } from '../modules/auth/auth.route'
+import { categoryRoutes } from '../modules/category/category.routes'
 import { FoodRoutes } from '../modules/food/food.routes'
 import { UserRoutes } from '../modules/users/user.route'
 
@@ -17,6 +18,10 @@ const moduleRoutes = [
   {
     path: '/foods',
     route: FoodRoutes,
+  },
+  {
+    path: '/category',
+    route: categoryRoutes,
   },
 ]
 moduleRoutes.forEach(route => router.use(route.path, route.route))

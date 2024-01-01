@@ -10,7 +10,7 @@ const logIn = async (user: IUser): Promise<IUserLoginResponse> => {
   const { email, password } = user
   const userExist = await User.findOne(
     { email },
-    { password: 1, role: 1, email: 1 },
+    { password: 1, role: 1, email: 1, name: 1 },
   ).lean()
   if (!userExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User Doesnot Exist!')
@@ -25,6 +25,7 @@ const logIn = async (user: IUser): Promise<IUserLoginResponse> => {
     {
       email: userExist.email,
       role: userExist?.role,
+      name: userExist?.name,
     },
     config.jwt.jwt_secret as Secret,
     {

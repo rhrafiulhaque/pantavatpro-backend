@@ -9,10 +9,6 @@ router.post(
   validateRequest(FoodValidation.foodItemAddZodSchema),
   foodController.addFoodItem,
 )
-router.get(
-  '/get-all-foods',
-
-  foodController.getAllFoods,
-)
+router.get('/get-all-foods', foodController.getAllFoods)
 
 export const FoodRoutes = router
