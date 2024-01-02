@@ -18,8 +18,18 @@ const getAllFoods = async () => {
   const result = await Food.find()
   return result
 }
+const getFoodsByMenu = async (meal: string) => {
+  const result = await Food.find({ meal })
+  return result
+}
+const getFoodsById = async (foodId: string) => {
+  const result = await Food.findOne({ _id: foodId })
+  return result
+}
 
 export const foodService = {
   addFoodItem,
   getAllFoods,
+  getFoodsByMenu,
+  getFoodsById,
 }

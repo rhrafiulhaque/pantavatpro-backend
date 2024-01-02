@@ -10,5 +10,7 @@ router.post(
   foodController.addFoodItem,
 )
 router.get('/get-all-foods', foodController.getAllFoods)
+router.get('/getfoodsbymenu/:menuname', foodController.getFoodsByMenu)
+router.get('/getfoodsbyid/:foodId', foodController.getFoodsById)
 
 export const FoodRoutes = router

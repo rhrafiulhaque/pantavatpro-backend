@@ -9,5 +9,6 @@ router.post(
   categoryController.addCategory,
 )
 router.get('/get-all-category', categoryController.getAllCategory)
+router.get('/categoryname/:category', categoryController.getCategoryByName)
 
 export const categoryRoutes = router

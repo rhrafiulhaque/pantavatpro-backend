@@ -25,8 +25,36 @@ const getAllFoods: RequestHandler = async (req, res, next) => {
     next(err)
   }
 }
+const getFoodsByMenu: RequestHandler = async (req, res, next) => {
+  const { menuname } = req.params
+  try {
+    const result = await foodService.getFoodsByMenu(menuname)
+    res.status(200).json({
+      success: true,
+      message: 'Food Retrived Successfully!',
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+const getFoodsById: RequestHandler = async (req, res, next) => {
+  const { foodId } = req.params
+  try {
+    const result = await foodService.getFoodsById(foodId)
+    res.status(200).json({
+      success: true,
+      message: 'Food Retrived Successfully!',
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
 export const foodController = {
   addFoodItem,
   getAllFoods,
+  getFoodsByMenu,
+  getFoodsById,
 }
