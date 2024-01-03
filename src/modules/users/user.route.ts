@@ -12,6 +12,15 @@ router.post(
   UserController.createUser,
 )
 
-router.get('/allusers', auth(ENUM_USER_ROLE.USER), UserController.getAllUsers)
+router.get(
+  '/allusers',
+  auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN),
+  UserController.getAllUsers,
+)
+router.get(
+  '/get-user-by-email/:userEmail',
+
+  UserController.getUserByEmail,
+)
 
 export const UserRoutes = router

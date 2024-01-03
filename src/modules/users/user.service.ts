@@ -16,10 +16,23 @@ const createUser = async (user: IUser): Promise<IUser | null> => {
 
 const getAllUsers = async (): Promise<IUser[]> => {
   const result = await User.find()
+  if (result.length == 0) {
+    throw new ApiError(500, 'Users Are Not Found')
+  }
+  return result
+}
+
+const getUserByEmail = async (email: string) => {
+  const result = await User.findOne({ email })
+
+  if (!result) {
+    throw new ApiError(500, 'User Not Found')
+  }
   return result
 }
 
 export const usersService = {
   createUser,
   getAllUsers,
+  getUserByEmail,
 }

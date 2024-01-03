@@ -1,5 +1,4 @@
-import { Model } from 'mongoose'
-import { IFood } from '../food/food.interface'
+import mongoose, { Model } from 'mongoose'
 
 export type IDeliveryStatus =
   | 'Submitted'
@@ -7,8 +6,15 @@ export type IDeliveryStatus =
   | 'Ongoing'
   | 'Delivered'
 
+export type ICartFood = {
+  _id: mongoose.Types.ObjectId
+  foodTitle: string
+  quantity: number
+  price: number
+}
+
 export type IOrder = {
-  food_items: IFood[]
+  food_items: ICartFood[]
   isPaid: boolean
   tranjectionId: string
   email: string

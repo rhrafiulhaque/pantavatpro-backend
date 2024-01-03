@@ -5,9 +5,10 @@ const orderSchema = new Schema<IOrder>(
   {
     food_items: [
       {
-        type: Schema.Types.ObjectId,
-        ref: 'Foods',
-        required: true,
+        _id: Schema.Types.ObjectId,
+        quantity: Number,
+        foodTitle: String,
+        price: Number,
       },
     ],
     isPaid: {

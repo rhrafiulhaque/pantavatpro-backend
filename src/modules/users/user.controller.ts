@@ -26,8 +26,22 @@ const getAllUsers: RequestHandler = async (req, res, next) => {
     next(err)
   }
 }
+const getUserByEmail: RequestHandler = async (req, res, next) => {
+  const { userEmail } = req.params
+  try {
+    const result = await usersService.getUserByEmail(userEmail)
+    res.status(200).json({
+      success: true,
+      message: 'User retrive successfully!',
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
 export const UserController = {
   createUser,
   getAllUsers,
+  getUserByEmail,
 }
