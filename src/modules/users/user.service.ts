@@ -4,10 +4,10 @@ import { User } from './user.model'
 
 const createUser = async (user: IUser): Promise<IUser | null> => {
   const userExist = await User.findOne({
-    $or: [{ email: user.email }, { contactNo: user.contactNo }],
+    email: user.email,
   })
   if (userExist) {
-    throw new ApiError(400, 'The Email or Contact No is already Exist')
+    throw new ApiError(400, 'The Email  is already Exist')
   } else {
     const result = await User.create(user)
     return result
@@ -30,9 +30,31 @@ const getUserByEmail = async (email: string) => {
   }
   return result
 }
+const updateUser = async (user: {
+  name: string
+  email: string
+  contactNo: number
+  address: string
+  district: string
+}) => {
+  const { name, email, contactNo, address, district } = user
+  const updateFields = {
+    name,
+    contactNo,
+    address,
+    district,
+  }
+  const result = await User.findOneAndUpdate(
+    { email },
+    { $set: updateFields },
+    { new: true, upsert: true },
+  )
+  return result
+}
 
 export const usersService = {
   createUser,
   getAllUsers,
   getUserByEmail,
+  updateUser,
 }

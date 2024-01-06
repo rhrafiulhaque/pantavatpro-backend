@@ -29,8 +29,8 @@ const addOrder: RequestHandler = async (req, res, next) => {
       tran_id: tran_id, // use unique tran_id for each api call
       success_url: `http://localhost:5000/api/v1/orders/payment/success/${tran_id}`,
       // success_url: `https://kinbaanaki-backend.vercel.app/api/v1/order/payment/success/${tran_id}`,
-      fail_url: 'http://localhost:3030/fail',
-      cancel_url: 'http://localhost:3030/cancel',
+      fail_url: 'http://localhost:3000/payment/failded',
+      cancel_url: 'http://localhost:3000/payment/canceled',
       ipn_url: 'http://localhost:3030/ipn',
       shipping_method: 'Courier',
       product_name: 'computer',
@@ -114,20 +114,43 @@ const successPayment: RequestHandler = async (req, res, next) => {
   }
 }
 
-// const getAllFoods: RequestHandler = async (req, res, next) => {
-//   try {
-//     const result = await foodService.getAllFoods()
-//     res.status(200).json({
-//       success: true,
-//       message: 'Food Retrived Successfully!',
-//       data: result,
-//     })
-//   } catch (err) {
-//     next(err)
-//   }
-// }
+const getAllOrders: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await Order.find()
+    res.status(200).json({
+      success: true,
+      message: 'Order Retrived Successfully!',
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+const updateDeliveryStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const updateFields = {
+      deliveryStatus: req.body.deliveryStatus,
+    }
+    const data = await Order.findOneAndUpdate(
+      { email: req.body.email } && { _id: new ObjectId(req.body.id) },
+      { $set: updateFields },
+      { upsert: true },
+    )
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Delivery Statuse Updated Successfully',
+      data,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
 export const orderController = {
   addOrder,
   successPayment,
+  getAllOrders,
+  updateDeliveryStatus,
 }

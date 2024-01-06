@@ -11,6 +11,7 @@ router.post(
   validateRequest(UserValidation.createUserZodSchema),
   UserController.createUser,
 )
+router.patch('/update-user', UserController.updateUser)
 
 router.get(
   '/allusers',
