@@ -5,12 +5,7 @@ import routes from './app/routes'
 import globalErrorHandler from './error/globalErrorHandler'
 const app: Application = express()
 
-app.use(
-  cors({
-    origin: 'http://localhost:3000', // Replace with the actual origin of your frontend application
-    credentials: true,
-  }),
-)
+app.use(cors())
 
 app.use(cookieParser())
 

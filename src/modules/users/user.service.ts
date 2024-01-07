@@ -24,7 +24,6 @@ const getAllUsers = async (): Promise<IUser[]> => {
 
 const getUserByEmail = async (email: string) => {
   const result = await User.findOne({ email })
-
   if (!result) {
     throw new ApiError(500, 'User Not Found')
   }

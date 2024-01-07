@@ -1,6 +1,8 @@
 import express from 'express'
 import { ENUM_USER_ROLE } from '../../app/enums/user'
 import auth from '../../app/middleware/auth'
+import getEmailAuth from '../../app/middleware/emailAuth'
+import updateEmailAuth from '../../app/middleware/updateEmailAuth'
 import validateRequest from '../../app/middleware/validateRequest'
 import { UserController } from './user.controller'
 import { UserValidation } from './user.validation'
@@ -11,7 +13,7 @@ router.post(
   validateRequest(UserValidation.createUserZodSchema),
   UserController.createUser,
 )
-router.patch('/update-user', UserController.updateUser)
+router.patch('/update-user', updateEmailAuth(), UserController.updateUser)
 
 router.get(
   '/allusers',
@@ -19,8 +21,8 @@ router.get(
   UserController.getAllUsers,
 )
 router.get(
-  '/get-user-by-email/:userEmail',
-
+  '/get-user-by-email/:email',
+  getEmailAuth(),
   UserController.getUserByEmail,
 )
 

@@ -1,9 +1,11 @@
 import ApiError from '../../error/ApiError'
+import { IPaginationOptions } from '../../interface/common'
 import { IFood } from './food.interface'
 import { Food } from './food.model'
 
 const addFoodItem = async (food: IFood) => {
   const { foodTitle } = food
+  console.log(food)
   const foodExist = await Food.findOne({ foodTitle })
 
   if (foodExist) {
@@ -14,13 +16,38 @@ const addFoodItem = async (food: IFood) => {
   }
 }
 
-const getAllFoods = async () => {
-  const result = await Food.find()
-  return result
+const getAllFoods = async (paginationOptions: IPaginationOptions) => {
+  const { page = 1, limit = 4 } = paginationOptions
+  const skip = (page - 1) * limit
+  const result = await Food.find().sort().skip(skip).limit(limit)
+  const total = await Food.countDocuments()
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  }
 }
-const getFoodsByMenu = async (meal: string) => {
-  const result = await Food.find({ meal })
-  return result
+const getFoodsByMenu = async (
+  meal: string,
+  paginationOptions: { page?: 1 | undefined; limit?: 4 | undefined },
+) => {
+  const { page = 1, limit = 2 } = paginationOptions
+  const skip = (page - 1) * limit
+  const result = await Food.find({ meal }).sort().skip(skip).limit(limit)
+  const resultOfMenu = await Food.find({ meal })
+  const total = resultOfMenu.length
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  }
 }
 const getFoodsById = async (foodId: string) => {
   const result = await Food.findOne({ _id: foodId })
@@ -64,6 +91,52 @@ const updateSellsCount = async (foodId: string, quantity: number) => {
   }
 }
 
+const updateFood = async (food: {
+  _id: string
+  foodTitle: string
+  category: string
+  price: number
+  image: string
+  description: string
+  stock: number
+}) => {
+  const { _id, foodTitle, category, price, image, description, stock } = food
+  console.log(_id)
+  const updateFields = {
+    foodTitle,
+    category,
+    price,
+    image,
+    description,
+    stock,
+  }
+  const result = await Food.findOneAndUpdate(
+    { _id },
+    { $set: updateFields },
+    { new: true, upsert: true },
+  )
+  return result
+}
+
+const getSearchFood = async (searchKeyword: string) => {
+  try {
+    const regexPattern = new RegExp(searchKeyword, 'i')
+    const food = await Food.find({
+      $or: [
+        { foodTitle: { $regex: regexPattern } },
+        { category: { $regex: regexPattern } },
+      ],
+    })
+    if (food.length === 0) {
+      throw new ApiError(400, 'There are no foods matching the search criteria')
+    }
+
+    return food
+  } catch (err) {
+    throw new ApiError(400, 'There was a problem retrieving foods: ' + err)
+  }
+}
+
 export const foodService = {
   addFoodItem,
   getAllFoods,
@@ -71,4 +144,6 @@ export const foodService = {
   getFoodsById,
   updateAvailabeQuantity,
   updateSellsCount,
+  getSearchFood,
+  updateFood,
 }

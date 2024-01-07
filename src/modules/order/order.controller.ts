@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { RequestHandler } from 'express'
+import pick from '../../app/shared/pick'
+import { paginationFields } from '../../interface/common'
 import { foodService } from '../food/food.service'
 import { Order } from './order.model'
 const { ObjectId } = require('mongodb')
@@ -27,10 +29,12 @@ const addOrder: RequestHandler = async (req, res, next) => {
       total_amount: total_price,
       currency: 'BDT',
       tran_id: tran_id, // use unique tran_id for each api call
-      success_url: `http://localhost:5000/api/v1/orders/payment/success/${tran_id}`,
-      // success_url: `https://kinbaanaki-backend.vercel.app/api/v1/order/payment/success/${tran_id}`,
-      fail_url: 'http://localhost:3000/payment/failded',
-      cancel_url: 'http://localhost:3000/payment/canceled',
+      // success_url: `http://localhost:5000/api/v1/orders/payment/success/${tran_id}`,
+      success_url: `https://pantavat-backend.vercel.app/api/v1/orders/payment/success/${tran_id}`,
+      // fail_url: 'http://localhost:3000/payment/failded',
+      fail_url: 'https://pantavat.vercel.app/payment/failded',
+      // cancel_url: 'http://localhost:3000/payment/canceled',
+      cancel_url: 'https://pantavat.vercel.app/payment/canceled',
       ipn_url: 'http://localhost:3030/ipn',
       shipping_method: 'Courier',
       product_name: 'computer',
@@ -44,7 +48,7 @@ const addOrder: RequestHandler = async (req, res, next) => {
       cus_state: 'Dhaka',
       cus_postcode: '1000',
       cus_country: 'Bangladesh',
-      cus_phone: order.data.phonenumber,
+      cus_phone: order.data.contactNo,
       cus_fax: '01711111111',
       ship_name: 'Customer Name',
       ship_add1: 'Dhaka',
@@ -98,8 +102,8 @@ const successPayment: RequestHandler = async (req, res, next) => {
         }
 
         // Redirect to the success page
-        res.redirect('http://localhost:3000/payment/success')
-        // res.redirect('https://kinbaanaki.web.app/payment-success');
+        // res.redirect('http://localhost:3000/payment/success')
+        res.redirect('https://pantavat.vercel.app/payment/success')
       } else {
         console.log('Order not found')
         res.status(404).json({ message: 'Order not found' })
@@ -116,10 +120,53 @@ const successPayment: RequestHandler = async (req, res, next) => {
 
 const getAllOrders: RequestHandler = async (req, res, next) => {
   try {
-    const result = await Order.find()
+    const paginationOptions: { page?: number; limit?: number } = pick(
+      req.query,
+      paginationFields,
+    )
+    const { page = 1, limit = 4 } = paginationOptions
+    const skip = (page - 1) * limit
+
+    const result = await Order.find().sort().skip(skip).limit(limit)
+    const total = await Order.countDocuments()
     res.status(200).json({
       success: true,
       message: 'Order Retrived Successfully!',
+      meta: {
+        page,
+        limit,
+        total,
+      },
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const getOrderListByEmail: RequestHandler = async (req, res, next) => {
+  try {
+    const paginationOptions: { page?: number; limit?: number } = pick(
+      req.query,
+      paginationFields,
+    )
+    const { page = 1, limit = 4 } = paginationOptions
+    const skip = (page - 1) * limit
+    const result = await Order.find({ email: req.params.email })
+      .sort()
+      .skip(skip)
+      .limit(limit)
+    const resultOfMenu = await Order.find({ email: req.params.email })
+    const total = resultOfMenu.length
+
+    res.status(200).json({
+      success: true,
+      message: 'Order Retrived Successfully!',
+      meta: {
+        page,
+        limit,
+        total,
+      },
       data: result,
     })
   } catch (err) {
@@ -153,4 +200,5 @@ export const orderController = {
   successPayment,
   getAllOrders,
   updateDeliveryStatus,
+  getOrderListByEmail,
 }
