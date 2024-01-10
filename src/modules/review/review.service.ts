@@ -6,7 +6,6 @@ import { Review } from './review.model'
 
 const addReview = async (review: IReview) => {
   const { userEmail, food } = review
-  console.log(userEmail, food)
   const reviewExist = await Review.findOne({ food, userEmail })
   if (reviewExist) {
     throw new ApiError(
@@ -14,7 +13,10 @@ const addReview = async (review: IReview) => {
       'The User has already submitted a review for this food.',
     )
   } else {
-    const result = await Review.create(review)
+    const result = await Review.create({
+      ...review,
+      food: await Food.findById(food).exec(),
+    })
     const stats = await Review.aggregate([
       {
         $match: { food: new mongoose.Types.ObjectId(food._id) },
@@ -43,13 +45,33 @@ const addReview = async (review: IReview) => {
   }
 }
 const getReviewsByFoodId = async (foodId: string) => {
-  const reviews = await Review.find({ food: foodId })
+  const reviews = await Review.find({ food: foodId }).populate('food')
+
   return reviews
 }
 
 const getAllReview = async () => {
-  const reviews = await Review.find()
+  const reviews = await Review.find().populate('food')
   return reviews
+}
+const getFeedBack = async () => {
+  const reviews = await Review.find().populate('food')
+  const uniqueReviews = new Map()
+
+  for (const review of reviews) {
+    const email = review.userEmail
+
+    // Check if email is already in the set
+    if (!uniqueReviews.has(email)) {
+      // If not, add the review to the set
+      uniqueReviews.set(email, review)
+    }
+  }
+
+  // Convert the map values back to an array
+  const uniqueReviewsArray = Array.from(uniqueReviews.values())
+
+  return uniqueReviewsArray
 }
 
 const getReviewsByUserEmail = async (
@@ -59,6 +81,7 @@ const getReviewsByUserEmail = async (
   const { page = 1, limit = 2 } = paginationOptions
   const skip = (page - 1) * limit
   const reviews = await Review.find({ userEmail: email })
+    .populate('food')
     .sort()
     .skip(skip)
     .limit(limit)
@@ -79,4 +102,5 @@ export const reviewService = {
   getReviewsByFoodId,
   getReviewsByUserEmail,
   getAllReview,
+  getFeedBack,
 }

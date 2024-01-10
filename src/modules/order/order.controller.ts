@@ -105,11 +105,9 @@ const successPayment: RequestHandler = async (req, res, next) => {
         // res.redirect('http://localhost:3000/payment/success')
         res.redirect('https://pantavat.vercel.app/payment/success')
       } else {
-        console.log('Order not found')
         res.status(404).json({ message: 'Order not found' })
       }
     } else {
-      console.log('Document not found or not updated')
       // Handle the case where the document was not found or not updated.
       res.status(404).json({ message: 'Document not found' })
     }

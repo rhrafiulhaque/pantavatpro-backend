@@ -21,7 +21,6 @@ const getReviewsByFoodId: RequestHandler = async (req, res, next) => {
     const foodId = req.params.foodId
 
     const reviews = await reviewService.getReviewsByFoodId(foodId)
-
     res.status(200).json({
       success: true,
       data: reviews,
@@ -38,6 +37,19 @@ const getAllReview: RequestHandler = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Reviews are  Retrived Successfully!',
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+const getFeedBack: RequestHandler = async (req, res, next) => {
+  try {
+    const result = await reviewService.getFeedBack()
+
+    res.status(200).json({
+      success: true,
+      message: 'FeedBack are  Retrived Successfully!',
       data: result,
     })
   } catch (err) {
@@ -69,4 +81,5 @@ export const reviewController = {
   getReviewsByFoodId,
   getReviewsByUserEmail,
   getAllReview,
+  getFeedBack,
 }

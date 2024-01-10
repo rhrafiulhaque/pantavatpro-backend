@@ -5,7 +5,6 @@ import { Food } from './food.model'
 
 const addFoodItem = async (food: IFood) => {
   const { foodTitle } = food
-  console.log(food)
   const foodExist = await Food.findOne({ foodTitle })
 
   if (foodExist) {
@@ -50,8 +49,12 @@ const getFoodsByMenu = async (
   }
 }
 const getFoodsById = async (foodId: string) => {
-  const result = await Food.findOne({ _id: foodId })
-  return result
+  try {
+    const result = await Food.findById(foodId)
+    return result
+  } catch (err) {
+    throw new ApiError(400, 'Failed to get food by ID: ' + err)
+  }
 }
 const updateAvailabeQuantity = async (updatefood: {
   id: string
@@ -101,7 +104,6 @@ const updateFood = async (food: {
   stock: number
 }) => {
   const { _id, foodTitle, category, price, image, description, stock } = food
-  console.log(_id)
   const updateFields = {
     foodTitle,
     category,

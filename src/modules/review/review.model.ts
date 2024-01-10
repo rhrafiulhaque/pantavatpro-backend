@@ -7,6 +7,12 @@ const reviewSchema = new Schema<IReview>(
       type: String,
       required: true,
     },
+
+    userName: {
+      type: String,
+      required: true,
+    },
+
     rating: {
       type: Number,
       required: true,
