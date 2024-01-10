@@ -104,12 +104,10 @@ const successPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                 res.redirect('https://pantavat.vercel.app/payment/success');
             }
             else {
-                console.log('Order not found');
                 res.status(404).json({ message: 'Order not found' });
             }
         }
         else {
-            console.log('Document not found or not updated');
             // Handle the case where the document was not found or not updated.
             res.status(404).json({ message: 'Document not found' });
         }
@@ -120,10 +118,19 @@ const successPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 const getAllOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield order_model_1.Order.find();
+        const paginationOptions = (0, pick_1.default)(req.query, common_1.paginationFields);
+        const { page = 1, limit = 4 } = paginationOptions;
+        const skip = (page - 1) * limit;
+        const result = yield order_model_1.Order.find().sort().skip(skip).limit(limit);
+        const total = yield order_model_1.Order.countDocuments();
         res.status(200).json({
             success: true,
             message: 'Order Retrived Successfully!',
+            meta: {
+                page,
+                limit,
+                total,
+            },
             data: result,
         });
     }

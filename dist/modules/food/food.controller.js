@@ -88,10 +88,24 @@ const getSearchFood = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         next(err);
     }
 });
+const updateFood = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield food_service_1.foodService.updateFood(req.body);
+        res.status(200).json({
+            success: true,
+            message: 'Update Food Successfully!',
+            data: result,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+});
 exports.foodController = {
     addFoodItem,
     getAllFoods,
     getFoodsByMenu,
     getFoodsById,
     getSearchFood,
+    updateFood,
 };

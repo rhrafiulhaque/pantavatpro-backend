@@ -10,7 +10,7 @@ const auth_1 = __importDefault(require("../../app/middleware/auth"));
 const emailAuth_1 = __importDefault(require("../../app/middleware/emailAuth"));
 const order_controller_1 = require("./order.controller");
 const router = express_1.default.Router();
-router.post('/add-order', order_controller_1.orderController.addOrder);
+router.post('/add-order', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.USER), order_controller_1.orderController.addOrder);
 router.post('/payment/success/:tranId', order_controller_1.orderController.successPayment);
 router.patch('/update-delivery-status', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), order_controller_1.orderController.updateDeliveryStatus);
 router.get('/getAllOrders', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), order_controller_1.orderController.getAllOrders);

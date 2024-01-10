@@ -25,7 +25,6 @@ const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 const getAllUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.user);
     try {
         const result = yield user_service_1.usersService.getAllUsers();
         res.status(200).json({

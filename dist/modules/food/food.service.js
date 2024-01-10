@@ -56,8 +56,13 @@ const getFoodsByMenu = (meal, paginationOptions) => __awaiter(void 0, void 0, vo
     };
 });
 const getFoodsById = (foodId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield food_model_1.Food.findOne({ _id: foodId });
-    return result;
+    try {
+        const result = yield food_model_1.Food.findById(foodId);
+        return result;
+    }
+    catch (err) {
+        throw new ApiError_1.default(400, 'Failed to get food by ID: ' + err);
+    }
 });
 const updateAvailabeQuantity = (updatefood) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -90,6 +95,19 @@ const updateSellsCount = (foodId, quantity) => __awaiter(void 0, void 0, void 0,
         throw new ApiError_1.default(400, 'Failed to update food sales:');
     }
 });
+const updateFood = (food) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _id, foodTitle, category, price, image, description, stock } = food;
+    const updateFields = {
+        foodTitle,
+        category,
+        price,
+        image,
+        description,
+        stock,
+    };
+    const result = yield food_model_1.Food.findOneAndUpdate({ _id }, { $set: updateFields }, { new: true, upsert: true });
+    return result;
+});
 const getSearchFood = (searchKeyword) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const regexPattern = new RegExp(searchKeyword, 'i');
@@ -116,4 +134,5 @@ exports.foodService = {
     updateAvailabeQuantity,
     updateSellsCount,
     getSearchFood,
+    updateFood,
 };

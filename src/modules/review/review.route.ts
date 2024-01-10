@@ -19,7 +19,7 @@ router.get(
   auth(ENUM_USER_ROLE.ADMIN),
   reviewController.getAllReview,
 )
-router.get('/getFeedback', reviewController.getFeedBack)
+router.get('/getfeedback', reviewController.getFeedBack)
 router.get(
   '/getReviewsByUserEmail/:email',
   getEmailAuth(),

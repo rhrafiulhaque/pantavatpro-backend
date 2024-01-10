@@ -19,13 +19,12 @@ const food_model_1 = require("../food/food.model");
 const review_model_1 = require("./review.model");
 const addReview = (review) => __awaiter(void 0, void 0, void 0, function* () {
     const { userEmail, food } = review;
-    console.log(userEmail, food);
     const reviewExist = yield review_model_1.Review.findOne({ food, userEmail });
     if (reviewExist) {
         throw new ApiError_1.default(500, 'The User has already submitted a review for this food.');
     }
     else {
-        const result = yield review_model_1.Review.create(review);
+        const result = yield review_model_1.Review.create(Object.assign(Object.assign({}, review), { food: yield food_model_1.Food.findById(food).exec() }));
         const stats = yield review_model_1.Review.aggregate([
             {
                 $match: { food: new mongoose_1.default.Types.ObjectId(food._id) },
@@ -54,13 +53,33 @@ const addReview = (review) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const getReviewsByFoodId = (foodId) => __awaiter(void 0, void 0, void 0, function* () {
-    const reviews = yield review_model_1.Review.find({ food: foodId });
+    const reviews = yield review_model_1.Review.find({ food: foodId }).populate('food');
     return reviews;
+});
+const getAllReview = () => __awaiter(void 0, void 0, void 0, function* () {
+    const reviews = yield review_model_1.Review.find().populate('food');
+    return reviews;
+});
+const getFeedBack = () => __awaiter(void 0, void 0, void 0, function* () {
+    const reviews = yield review_model_1.Review.find().populate('food');
+    const uniqueReviews = new Map();
+    for (const review of reviews) {
+        const email = review.userEmail;
+        // Check if email is already in the set
+        if (!uniqueReviews.has(email)) {
+            // If not, add the review to the set
+            uniqueReviews.set(email, review);
+        }
+    }
+    // Convert the map values back to an array
+    const uniqueReviewsArray = Array.from(uniqueReviews.values());
+    return uniqueReviewsArray;
 });
 const getReviewsByUserEmail = (email, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { page = 1, limit = 2 } = paginationOptions;
     const skip = (page - 1) * limit;
     const reviews = yield review_model_1.Review.find({ userEmail: email })
+        .populate('food')
         .sort()
         .skip(skip)
         .limit(limit);
@@ -79,4 +98,6 @@ exports.reviewService = {
     addReview,
     getReviewsByFoodId,
     getReviewsByUserEmail,
+    getAllReview,
+    getFeedBack,
 };

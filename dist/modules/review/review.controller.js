@@ -42,6 +42,32 @@ const getReviewsByFoodId = (req, res, next) => __awaiter(void 0, void 0, void 0,
         next(err);
     }
 });
+const getAllReview = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield review_service_1.reviewService.getAllReview();
+        res.status(200).json({
+            success: true,
+            message: 'Reviews are  Retrived Successfully!',
+            data: result,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+});
+const getFeedBack = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield review_service_1.reviewService.getFeedBack();
+        res.status(200).json({
+            success: true,
+            message: 'FeedBack are  Retrived Successfully!',
+            data: result,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+});
 const getReviewsByUserEmail = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const email = req.params.email;
@@ -62,4 +88,6 @@ exports.reviewController = {
     addReview,
     getReviewsByFoodId,
     getReviewsByUserEmail,
+    getAllReview,
+    getFeedBack,
 };
